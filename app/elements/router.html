@@ -1,0 +1,17 @@
+<script type="text/javascript" src="../bower_components/page/page.js"></script>
+
+<script type="text/javascript">
+window.addEventListener('WebComponentsReady', function () {
+  page('/', function () {
+    app.route = '/';
+  });
+
+  page('*', function () {
+    app.route = '404';
+  });
+
+  page({
+    hashbang: true
+  });
+});
+</script>

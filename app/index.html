@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#303F9F">
+  <meta name="msapplication-TileColor" content="#3372DF">
+
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js" type="text/javascript"></script>
+  <title>Lunar event</title>
+
+  <link rel="import" href="elements/elements.html">
+</head>
+
+
+<body unresolved class="fullbleed layout vertical">
+
+  <template is="dom-bind" id="app">
+
+      <paper-scroll-header-panel main condenses keep-condensed-header>
+
+        <!-- Main Toolbar -->
+        <paper-toolbar id="mainToolbar" class="tall">
+          <!-- Application name -->
+          <div class="bottom app-name paper-header">Lunar event</div>
+
+        </paper-toolbar>
+
+        <iron-pages selected="{{route}}" attr-for-selected="data-route">
+
+          <div data-route="/" content>
+
+          </div>
+
+          </iron-pages>
+
+        </paper-scroll-header-panel>
+
+    </template>
+
+  </body>
+  </html>
