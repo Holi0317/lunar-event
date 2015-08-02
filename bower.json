@@ -1,0 +1,28 @@
+{
+  "name": "lunar-event",
+  "version": "0.0.0",
+  "authors": [
+    "Holi0317 <holliswuhollis@gmail.com>"
+  ],
+  "description": "Add event periodically to Google Calendar according to lunar calendar",
+  "keywords": [
+    "lunar",
+    "google",
+    "calendar",
+    "event",
+    "periodic",
+    "browser",
+    "polymer"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  }
+}

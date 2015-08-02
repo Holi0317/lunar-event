@@ -1,0 +1,30 @@
+{
+  "name": "lunar-event",
+  "version": "0.0.0",
+  "description": "Add event periodically to Google Calendar according to lunar calendar",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holi0317/lunar-event.git"
+  },
+  "keywords": [
+    "lunar",
+    "google",
+    "calendar",
+    "event",
+    "periodic",
+    "browser",
+    "polymer"
+  ],
+  "author": "holi0317",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/holi0317/lunar-event/issues"
+  },
+  "homepage": "https://github.com/holi0317/lunar-event#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0"
+  }
+}
