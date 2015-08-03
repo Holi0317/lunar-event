@@ -30,7 +30,7 @@ for further information on custom CSS properties.
   --light-primary-color: #C5CAE9;
   --text-primary-color: #ffffff; /*text/icons*/
   --accent-color: #FF4081;
-  --primary-background-color: #c5cae9;
+  /*--primary-background-color: #c5cae9;*/
   --primary-text-color: #212121;
   --secondary-text-color: #727272;
   --disabled-text-color: #bdbdbd;
@@ -67,31 +67,13 @@ hr {
   margin: 5px 0;
 }
 
-#drawerToolbar {
-  color: var(--secondary-text-color);
-  background-color: var(--drawer-menu-color);
-  border-bottom: var(--drawer-toolbar-border-color);
-  height: 64px;
-}
-
-paper-material {
-  border-radius: 2px;
+iron-pages {
   height: 100%;
-  padding: 16px 0 16px 0;
-  width: calc(98.66% - 16px);
-  margin: 16px auto;
-  background: white;
 }
 
-#mainToolbar .paper-header {
-  margin-left: 48px;
-  @apply(--paper-font-subhead);
-  transition: all 0.5s;
-}
-
-#mainToolbar.tall .paper-header {
-  @apply(--paper-font-title);
-
+paper-button {
+  line-height: 15px;
+  color: white;
 }
 
 paper-button.green {
@@ -110,37 +92,45 @@ paper-button.red {
   background: var(--paper-red-500);
 }
 
-header {
-  padding: 14px 0;
-  border-bottom: 1px solid #E5E5E5;
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 28px;
+paper-progress.blue {
+  --paper-progress-active-color: var(--paper-light-blue-500);
+  --paper-progress-secondary-color: var(--paper-light-blue-100);
 }
 
-paper-button {
-  line-height: 15px;
-  color: white;
+paper-material {
+  border-radius: 2px;
+  height: 100%;
+  padding: 16px 0 16px 0;
+  width: calc(98.66% - 16px);
+  margin: 16px auto;
+  background: white;
 }
 
-table {
-  width: 100%;
-  margin: 12px 0;
-  border-top: 1px solid #E5E5E5;
-  border-collapse: collapse;
+#page-root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-tr {
-  border-bottom: 1px solid #E5E5E5;
-  padding: 0 18px;
+#page-root > div {
+  max-width: 60%;
 }
 
-table tr{
-  height: 30px;
+#page-root google-signin {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: 50%;
 }
 
-tr:nth-child(even) {
-  background-color: var(--paper-grey-200);
+#mainToolbar .paper-header {
+  margin-left: 48px;
+  @apply(--paper-font-subhead);
+  transition: all 0.5s;
+}
+
+#mainToolbar.tall .paper-header {
+  @apply(--paper-font-title);
 }
 
 [content] {
@@ -172,6 +162,10 @@ tr:nth-child(even) {
     font-size: 26px;
   }
 
+  #page-root google-signin {
+    width: 100%;
+  }
+
   #drawer .paper-toolbar {
     margin-left: 16px;
   }
@@ -198,10 +192,6 @@ tr:nth-child(even) {
     margin-bottom: 32px;
     padding-left: 30px;
     padding-right: 30px;
-  }
-
-  #drawer.paper-drawer-panel > [drawer] {
-    border-right: 1px solid rgba(0, 0, 0, 0.14);
   }
 
   iron-pages {

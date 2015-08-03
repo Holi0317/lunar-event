@@ -18,26 +18,47 @@
 
   <template is="dom-bind" id="app">
 
-      <paper-scroll-header-panel main condenses keep-condensed-header>
+    <paper-scroll-header-panel main condenses keep-condensed-header class="flex">
 
-        <!-- Main Toolbar -->
-        <paper-toolbar id="mainToolbar" class="tall">
-          <!-- Application name -->
-          <div class="bottom app-name paper-header">Lunar event</div>
+      <!-- Main Toolbar -->
+      <paper-toolbar id="mainToolbar" class="tall">
+        <!-- Application name -->
+        <div class="bottom app-name paper-header">Lunar event</div>
 
-        </paper-toolbar>
+      </paper-toolbar>
 
-        <iron-pages selected="{{route}}" attr-for-selected="data-route">
+      <iron-pages selected="{{route}}" attr-for-selected="data-route">
 
-          <div data-route="/" content>
-
+        <div data-route="/" content id="page-root">
+          <div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <google-signin id="signin" width="wide" client-id="91000652380-dcu6j0t2b1rs578l881nso38n7ropgte.apps.googleusercontent.com" scopes="https://www.googleapis.com/auth/calendar"></google-signin>
           </div>
+        </div>
 
-          </iron-pages>
+        <div data-route="/main" content id="page-main">
+          <event-list></event-list>
+        </div>
 
-        </paper-scroll-header-panel>
+        <div data-route="404" content>
+          404-ed
+        </div>
 
-    </template>
+      </iron-pages>
 
-  </body>
-  </html>
+    </paper-scroll-header-panel>
+
+  </template>
+
+</body>
+<script>
+app.addEventListener('dom-change', function () {
+  this.$.signin.addEventListener('google-signin-success', function () {
+    page('/main');
+  });
+  this.$.signin.addEventListener('google-signin-aware-signed-out', function () {
+    page('/');
+  });
+});
+</script>
+</html>

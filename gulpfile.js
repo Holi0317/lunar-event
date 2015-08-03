@@ -5,6 +5,7 @@
   var del = require('del');
   var runSequence = require('run-sequence');
   var browserSync = require('browser-sync').create();
+  var reload = browserSync.reload;
 
   gulp.task('vulcanize', function () {
     return gulp.src('app/elements/elements.html')
@@ -52,27 +53,16 @@
       .pipe(gulp.dest('dist/elements'));
     });
 
-    gulp.task('preserve', function (cb) {
-      return runSequence(
-        'clean',
-        ['copy:bower', 'copy:elements'],
-        'html',
-        cb
-      );
-    });
-
-    gulp.task('watch:html', ['html'], browserSync.reload);
-    gulp.task('watch:elements', ['copy:elements'], browserSync.reload);
-
-    gulp.task('serve', ['preserve'], function() {
+    gulp.task('serve', function() {
       browserSync.init({
         server: {
-          baseDir: "./dist"
-        }
+          baseDir: "./app"
+        },
       });
 
-      gulp.watch('app/index.html', ['watch:html']);
-      gulp.watch('app/elements/**/*', ['watch:elements']);
+      gulp.watch('app/index.html', reload);
+      gulp.watch('app/elements/**/*', reload);
+      gulp.watch('app/bower_components/**/*', reload);
     });
 
     gulp.task('default', function (cb) {

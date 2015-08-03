@@ -6,6 +6,10 @@ window.addEventListener('WebComponentsReady', function () {
     app.route = '/';
   });
 
+  page('/main', function () {
+    app.route = '/main';
+  });
+
   page('*', function () {
     app.route = '404';
   });
