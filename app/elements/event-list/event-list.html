@@ -8,14 +8,20 @@
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 
 <link rel="import" href="../../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+
 <link rel="import" href="year-item.html">
 <link rel="import" href="month-item.html">
+
+<script src="../../bower_components/LunarCalendar/lib/LunarCalendar.min.js" charset="utf-8"></script>
 
 <dom-module id="event-list">
 <style>
@@ -35,6 +41,19 @@ paper-material {
   background: white;
 }
 
+paper-dialog .content{
+  padding: 24px;
+}
+
+paper-dialog h2 {
+  margin: 0;
+  margin-bottom: 20px;
+}
+
+paper-dialog p {
+  opacity: 0.54;
+}
+
 div.heading > h1 {
   display: inline;
 }
@@ -49,6 +68,10 @@ div.row {
 
 div.actions {
   text-align: right;
+}
+
+paper-button.button {
+  color: var(--paper-blue-500);
 }
 
 .pull-right {
@@ -89,8 +112,8 @@ paper-button.green {
     <hr>
 
     <form is="iron-form" id="form" method="GET" action="/">
-      <paper-input name="content" label="內容"></paper-input>
-      <paper-input name="calendar-name" label="日曆名稱"></paper-input>
+      <paper-input name="content" label="內容" required auto-validate error-message="請填寫此項目"></paper-input>
+      <paper-input name="calendar-name" label="日曆名稱" auto-validate required error-message="請填寫此項目"></paper-input>
       <div class="row paper-font-body1">
         每
         <select name="frequency" id="frequency">
@@ -129,6 +152,22 @@ paper-button.green {
     </form>
   </paper-material>
 
+  <paper-dialog id="import-promit" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+    <div class="content">
+      <h2>匯入</h2>
+      <p>在以下的方格內, 填入匯出的內容</p>
+      <paper-textarea label="方格" no-float-label></paper-textarea>
+    </div>
+    <div class="actions">
+      <paper-button on-click="cancelImport" class="button">取消</paper-button>
+      <paper-button on-click="submitImport" class="button">匯入</paper-button>
+    </div>
+  </paper-dialog>
+
+  <paper-dialog id="export-promit" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+
+  </paper-dialog>
+
 </template>
 
 <script>
@@ -149,8 +188,11 @@ Polymer({
     'form.iron-form-submit': 'formSubmit',
     'add.click': 'dynamicForm',
     'frequency.change': 'freqChange',
+    'menu-import.click': 'showImport',
+    'menu-export.click': 'showExport',
   },
 
+  // Form functions
   dynamicForm: function () {
     // Add an item to this.$.dynamic.
     var child = this.mapper[this.$.frequency.value];
@@ -173,6 +215,28 @@ Polymer({
 
   submitForm: function () {
     this.$.form.submit();
+  },
+
+
+  // Import functions
+  showImport: function () {
+    this.$['import-promit'].open();
+  },
+
+  cancelImport: function () {
+    this.$['import-promit'].close();
+  },
+
+  submitImport: function () {
+    // Check if json is valid
+    // Check if there is needed keys
+    // Write to form
+  },
+
+
+  // Export functions
+  showExport: function () {
+    this.$['export-promit'].open();
   },
 
 });
