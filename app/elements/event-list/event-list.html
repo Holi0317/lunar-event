@@ -110,7 +110,7 @@ paper-button.green {
         <paper-menu class="dropdown-content">
           <paper-item id="menu-import">匯入</paper-item>
           <paper-item id="menu-export">匯出</paper-item>
-          <paper-item>求助</paper-item>
+          <a href="https://github.com/Holi0317/lunar-event/blob/master/README.md" target="_blank"><paper-item>求助</paper-item></a>
         </paper-menu>
       </paper-menu-button>
     </div>
@@ -118,8 +118,8 @@ paper-button.green {
     <hr>
 
     <form is="iron-form" id="form" method="GET" action="/">
-      <paper-input name="content" label="內容" required></paper-input>
-      <paper-input name="calendar-name" label="日曆名稱" required></paper-input>
+      <paper-input name="content" label="標題" required value="{{valueContent}}"></paper-input>
+      <paper-input name="calendar-name" label="日曆名稱" required value="{{valueName}}"></paper-input>
       <br>
       <div class="row paper-font-body1">
         <span>每</span>
@@ -140,7 +140,7 @@ paper-button.green {
         </select>
         <span>正月初一</span>
       </div>
-      <paper-textarea label="說明" name="details"></paper-textarea>
+      <paper-textarea label="說明" name="details" value="{{valueDetails}}"></paper-textarea>
 
       <div class="row" id="dynamic">
         <year-item></year-item>
@@ -163,7 +163,7 @@ paper-button.green {
     <div class="content">
       <h2>匯入</h2>
       <p>在以下的方格內, 填入匯出的內容</p>
-      <paper-textarea label="方格" no-float-label></paper-textarea>
+      <paper-textarea label="方格" no-float-label value="{{importValue}}"></paper-textarea>
     </div>
     <div class="actions">
       <paper-button on-click="cancelImport" class="button">取消</paper-button>
@@ -172,11 +172,11 @@ paper-button.green {
   </paper-dialog>
 
   <paper-dialog id="export-promit" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
-
-  </paper-dialog>
-
-  <paper-dialog id="help" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
-
+    <div class="content">
+      <h2>匯出</h2>
+      <p>以下為匯出的內容.</p>
+      <paper-textarea value="{{exportValue}}" readonly></paper-textarea>
+    </div>
   </paper-dialog>
 
   <paper-toast id="toast" text="{{toastMessage}}"></paper-toast>
@@ -203,7 +203,6 @@ Polymer({
     'frequency.change': 'freqChange',
     'menu-import.click': 'showImport',
     'menu-export.click': 'showExport',
-    'menu-help.click': 'showHelp',
   },
 
   // Form functions
@@ -322,7 +321,11 @@ Polymer({
             lDay = form['day[]'][i];
             var lMonth = form['month[]'][i];
 
-            if (leapMonth && (lMonth == leapMonth || lMonth > leapMonth)) {
+            if (leapMonth && lMonth > leapMonth) {
+              date = LunarCalendar.lunarToSolar(year, lMonth+1, lDay);
+            } else if (lMonth === leapMonth) {
+              date = LunarCalendar.lunarToSolar(year, lMonth, lDay);
+              batch.add(createEvent(id, form.content, form.details, i, date.day, date.month, date.year));
               date = LunarCalendar.lunarToSolar(year, lMonth+1, lDay);
             } else {
               date = LunarCalendar.lunarToSolar(year, lMonth, lDay);
@@ -360,7 +363,6 @@ Polymer({
     this.$.form.submit();
   },
 
-
   // Import functions
   showImport: function () {
     this.$['import-promit'].open();
@@ -372,13 +374,56 @@ Polymer({
 
   submitImport: function () {
     // Check if json is valid
+    var value;
+    try {
+      value = JSON.parse(this.importValue);
+    } catch (e) {
+      console.log('Invalid JSON');
+      this.toastMessage = '不正確的格式.';
+      this.$.toast.show();
+      return;
+    }
     // Check if there is needed keys
+    if (!('content' in value && 'calendar-name' in value && 'frequency' in value && 'start-year' in value && 'end-year' in value && 'day[]' in value && 'day[]' in value)) {
+      console.log('Missing some value');
+      console.log(value);
+      this.toastMessage = '不正確的格式.';
+      this.$.toast.show();
+      return;
+    }
+    // Change month[] and day[] to array
+    if (typeof value['day[]'] !== 'object') {
+      value['day[]'] = [value['day[]']];
+    }
+    if (typeof value['month[]'] !== 'object') {
+      value['month[]'] = [value['month[]']];
+    }
+
     // Write to form
+    this.set('valueContent', value.content);
+    this.set('valueName', value.content);
+    this.set('valueDetails', value.details);
+
+    this.$$('select[name="start-year"]>option[value="'+value['start-year']+'"]').selected = true;
+    this.$$('select[name="end-year"]>option[value="'+value['end-year']+'"]').selected = true;
+
+    this.$$('#frequency option[value="'+value.frequency+'"]').selected = true;
+    Polymer.dom(this.$.dynamic).childNodes.forEach(function (item) {
+      item.remove();
+    });
+    value['day[]'].forEach(function (item, index) {
+      var child = this.mapper[this.$.frequency.value];
+      var element = document.createElement(child);
+      element.day = item;
+      element.month = value['month[]'][index];
+      this.$.dynamic.appendChild(element);
+    }.bind(this));
   },
 
 
   // Export functions
   showExport: function () {
+    this.exportValue = JSON.stringify(this.$.form.serialize());
     this.$['export-promit'].open();
   },
 

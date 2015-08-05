@@ -1,13 +1,49 @@
 <script>
 itemBehaviour = {
   listeners: {
-    'remove.click': 'removeMe',
-    'remove.tab': 'removeMe',
+    'remove.click': 'remove',
+    'month.change': '_changeMonth',
+    'day.change': '_changeDay',
   },
-
-  removeMe: function () {
-    // I shall kill myself now.
-    this.remove();
+  properties: {
+    month: {
+      type: Number,
+      notify: true,
+      observer: '_monthChanged'
+    },
+    day: {
+      type: Number,
+      notify: true,
+      observer: '_dayChanged'
+    }
   },
+  ready: function () {
+    if (this.month) {
+      this.$$('#month option[value="'+this.month+'"]').selected = true;
+    }
+    if (this.day) {
+      this.$$('#day option[value="'+this.day+'"]').selected = true;
+    }
+  },
+  // Changed by user selecting
+  _changeMonth: function (e) {
+    console.log('Changed month');
+    var el = this.$.month;
+    this.set('month', el.options[el.selectedIndex].value);
+  },
+  _changeDay: function (e) {
+    var el = this.$.day;
+    this.set('day', el.options[el.selectedIndex].value);
+  },
+  // Changed by data bind value
+  _monthChanged: function (newVal, oldVal) {
+    console.log('Month changed');
+    var el = this.$.month;
+    this.$$('#month option[value="'+newVal+'"]').selected = true;
+  },
+  _dayChanged: function (newVal, oldVal) {
+    var el = this.$.day;
+    this.$$('#day option[value="'+newVal+'"]').selected = true;
+  }
 };
 </script>
