@@ -30,3 +30,4 @@ data
 bower_components
 .tmp
 dist
+secret.json

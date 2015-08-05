@@ -25,7 +25,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
     "page": "visionmedia/page.js#~1.6.3",
-    "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.2",
     "iron-pages": "PolymerElements/iron-pages#^1.0.0",
     "paper-scroll-header-panel": "PolymerElements/paper-scroll-header-panel#^1.0.0",
     "paper-styles": "PolymerElements/paper-styles#^1.0.0",
@@ -43,6 +43,8 @@
     "paper-item": "PolymerElements/paper-item#~1.0.2",
     "LunarCalendar": "Holi0317/LunarCalendar",
     "paper-dialog": "PolymerElements/paper-dialog#~1.0.1",
-    "neon-animation": "PolymerElements/neon-animation#~1.0.6"
+    "neon-animation": "PolymerElements/neon-animation#~1.0.6",
+    "paper-toast": "PolymerElements/paper-toast#~1.0.0",
+    "string-format": "davidchambers/string-format#~0.5.0"
   }
 }
