@@ -1,6 +1,6 @@
 {
   "name": "lunar-event",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Add event periodically to Google Calendar according to lunar calendar",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
