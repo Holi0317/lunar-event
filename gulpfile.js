@@ -59,6 +59,7 @@
       ])
       .pipe($.replace(/@@clientId/g, secret.clientId))
       .pipe($.replace(/@@clientSecret/g, secret.clientSecret))
+      .pipe($.replace(/@@basePath/g, secret.basePath))
       .pipe($.size())
       .pipe(gulp.dest('dist/elements'));
     });
