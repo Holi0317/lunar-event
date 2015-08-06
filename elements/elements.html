@@ -21289,17 +21289,25 @@ Polymer({
       form['month[]'] = [form['month[]']];
     }
 
+    var onFail = function (err) {
+      // opt_onRejected handler
+      console.error('Google API rejected: ', err);
+      this.toastMessage = '失敗';
+      this.$.toast.show();
+      return;
+    }.bind(this);
+
     gapi.client.load('calendar', 'v3')
     .then(function () {
       // Create a celendar
       return gapi.client.calendar.calendars.insert({'summary': form['calendar-name']});
-    })
+    }, onFail)
     .then(function (res) {
       console.log('calendar created. Response: ', res);
       // Add the calendar to calendarList
       var id = res.result.id;
       return gapi.client.calendar.calendarList.insert({id: id});
-    })
+    }, onFail)
     .then(function (res) {
       console.log('Added calendar to calendarList. Response: ', res);
       // Create events
@@ -21377,13 +21385,13 @@ Polymer({
       }
 
       return batch;
-    })
+    }, onFail)
     .then(function (res) {
       console.log('Finished');
       self.toastMessage = '完成';
       self.$.toast.show();
       return;
-    });
+    }, onFail);
 
   },
 
