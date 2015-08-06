@@ -10796,6 +10796,10 @@ module.exports = Array.isArray || function (arr) {
 
 <script type="text/javascript">
 window.addEventListener('WebComponentsReady', function () {
+  /* jshint ignore:start */
+  page.base('/lunar-event');
+  /* jshint ignore:end */
+
   page('/', function () {
     app.route = '/';
   });
@@ -18337,9 +18341,11 @@ any apps you're building. See the Google Developers Console
       display: block;
       position: absolute;
       outline: none;
+      z-index: 1002;
     }
 
     #tooltip {
+      display: block;
       outline: none;
       @apply(--paper-font-common-base);
       font-size: 10px;
@@ -18350,13 +18356,17 @@ any apps you're building. See the Google Developers Console
 
       padding: 8px;
       border-radius: 2px;
-      z-index: 1002;
 
       @apply(--paper-tooltip);
     }
+
+    /* Thanks IE 10. */
+    .hidden {
+      display: none !important;
+    }
   </style>
   <template>
-    <div id="tooltip" hidden="">
+    <div id="tooltip" class="hidden">
       <content></content>
     </div>
   </template>
@@ -18379,7 +18389,8 @@ any apps you're building. See the Google Developers Console
          * must be a sibling of the tooltip.
          */
         for: {
-          type: String
+          type: String,
+          observer: '_forChanged'
         },
 
         /**
@@ -18424,16 +18435,16 @@ any apps you're building. See the Google Developers Console
        * of the tooltip.
        */
       get target () {
-        var ownerRoot = Polymer.dom(this).getOwnerRoot();
         var parentNode = Polymer.dom(this).parentNode;
-        var target;
+        // If the parentNode is a document fragment, then we need to use the host.
+        var ownerRoot = Polymer.dom(this).getOwnerRoot();
 
+        var target;
         if (this.for) {
-          target = parentNode.querySelector('#' + this.for);
-        } else if (parentNode.nodeType == 11) { // DOCUMENT_FRAGMENT_NODE
-          target = ownerRoot.host;
+          target = Polymer.dom(ownerRoot).querySelector('#' + this.for);
         } else {
-          target = parentNode;
+          target = parentNode.nodeType == Node.DOCUMENT_FRAGMENT_NODE ?
+              ownerRoot.host : parentNode;
         }
 
         return target;
@@ -18458,7 +18469,12 @@ any apps you're building. See the Google Developers Console
       },
 
       show: function() {
-        this.$.tooltip.hidden = false;
+        if (this._showing)
+          return;
+
+        this.cancelAnimation();
+
+        this.toggleClass('hidden', false, this.$.tooltip);
         this._setPosition();
         this._showing = true;
 
@@ -18466,8 +18482,15 @@ any apps you're building. See the Google Developers Console
       },
 
       hide: function() {
+        if (!this._showing)
+          return;
+
         this._showing = false;
         this.playAnimation('exit');
+      },
+
+      _forChanged: function() {
+        this._target = this.target;
       },
 
       _setPosition: function() {
@@ -18486,7 +18509,7 @@ any apps you're building. See the Google Developers Console
 
       _onAnimationFinish: function() {
         if (!this._showing) {
-          this.$.tooltip.hidden = true;
+          this.toggleClass('hidden', true, this.$.tooltip);
         }
       },
     })
@@ -19304,6 +19327,7 @@ any apps you're building. See the Google Developers Console
       height: 100%;
       font-size: inherit;
       font-family: inherit;
+      line-height: inherit;
     }
 
     ::content textarea:invalid {
@@ -19383,8 +19407,8 @@ any apps you're building. See the Google Developers Console
        * Bound to the textarea's `autofocus` attribute.
        */
       autofocus: {
-        type: String,
-        value: 'off'
+        type: Boolean,
+        value: false
       },
 
       /**
@@ -19535,7 +19559,7 @@ any apps you're building. See the Google Developers Console
     _computeValue: function() {
       return this.bindValue;
     }
-  })
+  });
 </script>
 <dom-module id="paper-textarea" assetpath="../bower_components/paper-input/">
   <template>
