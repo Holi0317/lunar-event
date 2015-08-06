@@ -17,6 +17,7 @@
       inlineScripts: true}))
       .pipe($.replace(/@@clientId/g, secret.clientId))
       .pipe($.replace(/@@clientSecret/g, secret.clientSecret))
+      .pipe($.replace(/@@basePath/g, secret.basePath))
       .pipe($.size())
       .pipe(gulp.dest('dist/elements'));
     });
@@ -25,6 +26,7 @@
       return gulp.src('app/index.html')
       .pipe($.replace(/@@clientId/g, secret.clientId))
       .pipe($.replace(/@@clientSecret/g, secret.clientSecret))
+      .pipe($.replace(/@@basePath/g, secret.basePath))
       .pipe($.htmlmin({
         removeComments: true,
         collapseWhitespace: true,
@@ -82,5 +84,22 @@
         ['vulcanize', 'html'],
         cb
       );
+    });
+
+    gulp.task('push', function () {
+      return gulp.src('./dist/**/*')
+      .pipe($.ghPages());
+    });
+
+    gulp.task('deploy', function (cb) {
+      secret.basePath = '/lunar-event';
+      return runSequence(
+        'clean',
+        ['copy:bower', 'copy:elements'],
+        ['vulcanize', 'html'],
+        'push',
+        cb
+      );
+
     });
   }());
