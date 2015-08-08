@@ -266,7 +266,7 @@ Polymer({
       console.error('Google API rejected: ', err);
       this.toastMessage = '失敗';
       this.$.toast.show();
-      return;
+      throw err;
     }.bind(this);
 
     gapi.client.load('calendar', 'v3')
