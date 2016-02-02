@@ -26,13 +26,13 @@
   "homepage": "https://github.com/holi0317/lunar-event#readme",
   "devDependencies": {
     "browser-sync": "^2.8.2",
-    "del": "^1.2.0",
+    "del": "^2.2.0",
     "gulp": "^3.9.0",
     "gulp-gh-pages": "^0.5.2",
     "gulp-htmlmin": "^1.1.3",
-    "gulp-load-plugins": "^0.10.0",
+    "gulp-load-plugins": "^1.2.0",
     "gulp-replace": "^0.5.3",
-    "gulp-size": "^1.2.3",
+    "gulp-size": "^2.0.0",
     "gulp-vulcanize": "^6.0.1",
     "run-sequence": "^1.1.2"
   }

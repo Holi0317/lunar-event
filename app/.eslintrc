@@ -1,0 +1,15 @@
+{
+  "env": {
+    "node": false,
+    "es6": true,
+    "browser": true
+  },
+  "ecmaFeatures": {
+    "modules": false
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    "quotes": [2, "single"],
+    "no-console": [2]
+  }
+}
