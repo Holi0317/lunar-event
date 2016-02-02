@@ -31,6 +31,7 @@
     "page": "visionmedia/page.js#~1.6.3",
     "string-format": "davidchambers/string-format#~0.5.0",
     "async": "~1.4.2",
-    "LunarCalendar": "Holi0317/LunarCalendar"
+    "LunarCalendar": "Holi0317/LunarCalendar",
+    "google-web-components": "GoogleWebComponents/google-web-components#^1.0.1"
   }
 }
