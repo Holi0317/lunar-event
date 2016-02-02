@@ -28,7 +28,8 @@ intent. Closing generally implies that the user acknowledged the content on the 
 it will cancel whenever the user taps outside it or presses the escape key. This behavior is
 configurable with the `no-cancel-on-esc-key` and the `no-cancel-on-outside-click` properties.
 `close()` should be called explicitly by the implementer when the user interacts with a control
-in the overlay element.
+in the overlay element. When the dialog is canceled, the overlay fires an 'iron-overlay-canceled'
+event. Call `preventDefault` on this event to prevent the overlay from closing.
 
 ### Positioning
 
@@ -79,8 +80,8 @@ context. You should place this element as a child of `<body>` whenever possible.
        * Set to true to display a backdrop behind the overlay.
        */
       withBackdrop: {
-        type: Boolean,
-        value: false
+        observer: '_withBackdropChanged',
+        type: Boolean
       },
 
       /**
@@ -138,19 +139,7 @@ context. You should place this element as a child of `<body>` whenever possible.
 
     },
 
-/**
- * Fired after the `iron-overlay` opens.
- * @event iron-overlay-opened
- */
-
-/**
- * Fired after the `iron-overlay` closes.
- * @event iron-overlay-closed {{canceled: boolean}} detail -
- *     canceled: True if the overlay was canceled.
- */
-
     listeners: {
-      'click': '_onClick',
       'iron-resize': '_onIronResize'
     },
 
@@ -159,19 +148,19 @@ context. You should place this element as a child of `<body>` whenever possible.
      * @type Node
      */
     get backdropElement() {
-      return this._backdrop;
+      return this._manager.backdropElement;
     },
 
     get _focusNode() {
       return Polymer.dom(this).querySelector('[autofocus]') || this;
     },
 
-    registered: function() {
-      this._backdrop = document.createElement('iron-overlay-backdrop');
-    },
-
     ready: function() {
       this._ensureSetup();
+    },
+
+    attached: function() {
+      // Call _openedChanged here so that position can be computed correctly.
       if (this._callOpenedWhenReady) {
         this._openedChanged();
       }
@@ -179,7 +168,7 @@ context. You should place this element as a child of `<body>` whenever possible.
 
     detached: function() {
       this.opened = false;
-      this._completeBackdrop();
+      this._manager.trackBackdrop(this);
       this._manager.removeOverlay(this);
     },
 
@@ -187,6 +176,7 @@ context. You should place this element as a child of `<body>` whenever possible.
      * Toggle the opened state of the overlay.
      */
     toggle: function() {
+      this._setCanceled(false);
       this.opened = !this.opened;
     },
 
@@ -194,24 +184,29 @@ context. You should place this element as a child of `<body>` whenever possible.
      * Open the overlay.
      */
     open: function() {
+      this._setCanceled(false);
       this.opened = true;
-      this.closingReason = {canceled: false};
     },
 
     /**
      * Close the overlay.
      */
     close: function() {
-      this.opened = false;
       this._setCanceled(false);
+      this.opened = false;
     },
 
     /**
      * Cancels the overlay.
      */
     cancel: function() {
-      this.opened = false,
+      var cancelEvent = this.fire('iron-overlay-canceled', undefined, {cancelable: true});
+      if (cancelEvent.defaultPrevented) {
+        return;
+      }
+
       this._setCanceled(true);
+      this.opened = false;
     },
 
     _ensureSetup: function() {
@@ -228,6 +223,7 @@ context. You should place this element as a child of `<body>` whenever possible.
         this.removeAttribute('aria-hidden');
       } else {
         this.setAttribute('aria-hidden', 'true');
+        Polymer.dom(this).unobserveNodes(this._observer);
       }
 
       // wait to call after ready only if we're initially open
@@ -235,30 +231,32 @@ context. You should place this element as a child of `<body>` whenever possible.
         this._callOpenedWhenReady = this.opened;
         return;
       }
-      if (this._openChangedAsync) {
-        this.cancelAsync(this._openChangedAsync);
-      }
 
-      this._toggleListeners();
+      this._manager.trackBackdrop(this);
 
       if (this.opened) {
         this._prepareRenderOpened();
       }
 
-      // async here to allow overlay layer to become visible.
+      if (this._openChangedAsync) {
+        this.cancelAsync(this._openChangedAsync);
+      }
+      // Async here to allow overlay layer to become visible, and to avoid
+      // listeners to immediately close via a click.
       this._openChangedAsync = this.async(function() {
         // overlay becomes visible here
         this.style.display = '';
-        // force layout to ensure transitions will go
-        this.offsetWidth;
+        // Force layout to ensure transition will go. Set offsetWidth to itself
+        // so that compilers won't remove it.
+        this.offsetWidth = this.offsetWidth;
         if (this.opened) {
           this._renderOpened();
         } else {
           this._renderClosed();
         }
+        this._toggleListeners();
         this._openChangedAsync = null;
-      });
-
+      }, 1);
     },
 
     _canceledChanged: function() {
@@ -266,38 +264,53 @@ context. You should place this element as a child of `<body>` whenever possible.
       this.closingReason.canceled = this.canceled;
     },
 
+    _withBackdropChanged: function() {
+      if (this.opened) {
+        this._manager.trackBackdrop(this);
+        if (this.withBackdrop) {
+          this.backdropElement.prepare();
+          // Give time to be added to document.
+          this.async(function(){
+            this.backdropElement.open();
+          }, 1);
+        } else {
+          this.backdropElement.close();
+        }
+      }
+    },
+
     _toggleListener: function(enable, node, event, boundListener, capture) {
       if (enable) {
+        // enable document-wide tap recognizer
+        if (event === 'tap') {
+          Polymer.Gestures.add(document, 'tap', null);
+        }
         node.addEventListener(event, boundListener, capture);
       } else {
+        // disable document-wide tap recognizer
+        if (event === 'tap') {
+          Polymer.Gestures.remove(document, 'tap', null);
+        }
         node.removeEventListener(event, boundListener, capture);
       }
     },
 
-    _toggleListeners: function() {
-      if (this._toggleListenersAsync) {
-        this.cancelAsync(this._toggleListenersAsync);
-      }
-      // async so we don't auto-close immediately via a click.
-      this._toggleListenersAsync = this.async(function() {
-        this._toggleListener(this.opened, document, 'click', this._boundOnCaptureClick, true);
-        this._toggleListener(this.opened, document, 'keydown', this._boundOnCaptureKeydown, true);
-        this._toggleListenersAsync = null;
-      });
+    _toggleListeners: function () {
+      this._toggleListener(this.opened, document, 'tap', this._boundOnCaptureClick, true);
+      this._toggleListener(this.opened, document, 'keydown', this._boundOnCaptureKeydown, true);
     },
 
     // tasks which must occur before opening; e.g. making the element visible
     _prepareRenderOpened: function() {
       this._manager.addOverlay(this);
 
-      if (this.withBackdrop) {
-        this.backdropElement.prepare();
-        this._manager.trackBackdrop(this);
-      }
-
       this._preparePositioning();
       this.fit();
       this._finishPositioning();
+
+      if (this.withBackdrop) {
+        this.backdropElement.prepare();
+      }
     },
 
     // tasks which cause the overlay to actually open; typically play an
@@ -316,52 +329,24 @@ context. You should place this element as a child of `<body>` whenever possible.
       this._finishRenderClosed();
     },
 
-    _onTransitionend: function(event) {
-      // make sure this is our transition event.
-      if (event && event.target !== this) {
-        return;
-      }
-      if (this.opened) {
-        this._finishRenderOpened();
-      } else {
-        this._finishRenderClosed();
-      }
-    },
-
     _finishRenderOpened: function() {
       // focus the child node with [autofocus]
-      if (!this.noAutoFocus) {
-        this._focusNode.focus();
-      }
+      this._applyFocus();
 
+      this._observer = Polymer.dom(this).observeNodes(this.notifyResize);
       this.fire('iron-overlay-opened');
-
-      this._squelchNextResize = true;
-      this.async(this.notifyResize);
     },
 
     _finishRenderClosed: function() {
       // hide the overlay and remove the backdrop
       this.resetFit();
       this.style.display = 'none';
-      this._completeBackdrop();
       this._manager.removeOverlay(this);
 
-      this._focusNode.blur();
-      // focus the next overlay, if there is one
-      this._manager.focusOverlay();
+      this._applyFocus();
 
+      this.notifyResize();
       this.fire('iron-overlay-closed', this.closingReason);
-
-      this._squelchNextResize = true;
-      this.async(this.notifyResize);
-    },
-
-    _completeBackdrop: function() {
-      if (this.withBackdrop) {
-        this._manager.trackBackdrop(this);
-        this.backdropElement.complete();
-      }
     },
 
     _preparePositioning: function() {
@@ -374,7 +359,7 @@ context. You should place this element as a child of `<body>` whenever possible.
       this.style.display = 'none';
       this.style.transform = this.style.webkitTransform = '';
       // force layout to avoid application of transform
-      this.offsetWidth;
+      /** @suppress {suspiciousCode} */ this.offsetWidth;
       this.style.transition = this.style.webkitTransition = '';
     },
 
@@ -390,41 +375,44 @@ context. You should place this element as a child of `<body>` whenever possible.
     },
 
     _onCaptureClick: function(event) {
-      // attempt to close asynchronously and prevent the close of a tap event is immediately heard
-      // on target. This is because in shadow dom due to event retargetting event.target is not
-      // useful.
-      if (!this.noCancelOnOutsideClick && (this._manager.currentOverlay() == this)) {
-        this._cancelJob = this.async(function() {
-          this.cancel();
-        }, 10);
-      }
-    },
-
-    _onClick: function(event) {
-      if (this._cancelJob) {
-        this.cancelAsync(this._cancelJob);
-        this._cancelJob = null;
+      if (this._manager.currentOverlay() === this &&
+          !this.noCancelOnOutsideClick &&
+          Polymer.dom(event).path.indexOf(this) === -1) {
+        this.cancel();
       }
     },
 
     _onCaptureKeydown: function(event) {
       var ESC = 27;
-      if (!this.noCancelOnEscKey && (event.keyCode === ESC)) {
+      if (this._manager.currentOverlay() === this &&
+          !this.noCancelOnEscKey &&
+          event.keyCode === ESC) {
         this.cancel();
-        event.stopPropagation();
       }
     },
 
     _onIronResize: function() {
-      if (this._squelchNextResize) {
-        this._squelchNextResize = false;
-        return;
-      }
       if (this.opened) {
         this.refit();
       }
     }
 
+/**
+ * Fired after the `iron-overlay` opens.
+ * @event iron-overlay-opened
+ */
+
+/**
+ * Fired when the `iron-overlay` is canceled, but before it is closed.
+ * Cancel the event to prevent the `iron-overlay` from closing.
+ * @event iron-overlay-canceled
+ */
+
+/**
+ * Fired after the `iron-overlay` closes.
+ * @event iron-overlay-closed
+ * @param {{canceled: (boolean|undefined)}} set to the `closingReason` attribute
+ */
   };
 
   /** @polymerBehavior */

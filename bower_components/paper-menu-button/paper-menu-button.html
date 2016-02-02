@@ -19,6 +19,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="paper-menu-button-animations.html">
 
 <!--
+Material design: [Dropdown buttons](https://www.google.com/design/spec/components/buttons.html#buttons-dropdown-buttons)
+
 `paper-menu-button` allows one to compose a designated "trigger" element with
 another element that represents "content", to create a dropdown menu that
 displays the "content" when the "trigger" is clicked.
@@ -52,7 +54,7 @@ Custom property | Description | Default
 `--paper-menu-button` | Mixin applied to the paper-menu-button | `{}`
 `--paper-menu-button-disabled` | Mixin applied to the paper-menu-button when disabled | `{}`
 `--paper-menu-button-dropdown` | Mixin applied to the paper-menu-button dropdown | `{}`
-
+`--paper-menu-button-content` | Mixin applied to the paper-menu-button content | `{}`
 
 @hero hero.svg
 @demo demo/index.html
@@ -88,11 +90,14 @@ Custom property | Description | Default
       margin-top: 20px;
     }
 
-    paper-material {
+    iron-dropdown {
+      @apply(--paper-menu-button-dropdown);
+    }
+
+    .dropdown-content {
       border-radius: 2px;
       background-color: var(--paper-menu-button-dropdown-background, --primary-background-color);
-
-      @apply(--paper-menu-button-dropdown);
+      @apply(--paper-menu-button-content);
     }
   </style>
   <template>
@@ -108,9 +113,10 @@ Custom property | Description | Default
       vertical-offset="[[verticalOffset]]"
       open-animation-config="[[openAnimationConfig]]"
       close-animation-config="[[closeAnimationConfig]]"
-      no-animations="[[noAnimations]]">
+      no-animations="[[noAnimations]]"
+      focus-target="[[_dropdownContent]]">
       <paper-material class="dropdown-content">
-        <content select=".dropdown-content"></content>
+        <content id="content" select=".dropdown-content"></content>
       </paper-material>
     </iron-dropdown>
   </template>
@@ -147,7 +153,8 @@ Custom property | Description | Default
         opened: {
           type: Boolean,
           value: false,
-          notify: true
+          notify: true,
+          observer: '_openedChanged'
         },
 
         /**
@@ -197,6 +204,15 @@ Custom property | Description | Default
          * dropdown.
          */
         noAnimations: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Set to true to disable automatically closing the dropdown after
+         * a selection has been made.
+         */
+        ignoreSelect: {
           type: Boolean,
           value: false
         },
@@ -259,6 +275,14 @@ Custom property | Description | Default
               }
             }];
           }
+        },
+
+        /**
+         * This is the element intended to be bound as the focus target
+         * for the `iron-dropdown` contained by `paper-menu-button`.
+         */
+        _dropdownContent: {
+          type: Object
         }
       },
 
@@ -268,7 +292,14 @@ Custom property | Description | Default
       },
 
       listeners: {
-        'iron-activate': '_onIronActivate'
+        'iron-select': '_onIronSelect'
+      },
+
+      /**
+       * The content element that is contained by the menu button, if any.
+       */
+      get contentElement() {
+        return Polymer.dom(this.$.content).getDistributedNodes()[0];
       },
 
       /**
@@ -291,14 +322,16 @@ Custom property | Description | Default
       },
 
       /**
-       * When an `iron-activate` event is received, the dropdown should
+       * When an `iron-select` event is received, the dropdown should
        * automatically close on the assumption that a value has been chosen.
        *
        * @param {CustomEvent} event A CustomEvent instance with type
-       * set to `"iron-activate"`.
+       * set to `"iron-select"`.
        */
-      _onIronActivate: function(event) {
-        this.close();
+      _onIronSelect: function(event) {
+        if (!this.ignoreSelect) {
+          this.close();
+        }
       },
 
       /**
@@ -310,6 +343,12 @@ Custom property | Description | Default
        */
       _openedChanged: function(opened, oldOpened) {
         if (opened) {
+          // TODO(cdata): Update this when we can measure changes in distributed
+          // children in an idiomatic way.
+          // We poke this property in case the element has changed. This will
+          // cause the focus target for the `iron-dropdown` to be updated as
+          // necessary:
+          this._dropdownContent = this.contentElement;
           this.fire('paper-dropdown-open');
         } else if (oldOpened != null) {
           this.fire('paper-dropdown-close');
@@ -336,4 +375,3 @@ Custom property | Description | Default
     Polymer.PaperMenuButton = PaperMenuButton;
   })();
 </script>
-
