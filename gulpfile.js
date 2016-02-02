@@ -40,8 +40,8 @@ gulp.task('html', function () {
   .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('clean', function (cb) {
-  del(['dist'], cb);
+gulp.task('clean', function () {
+  return del(['dist']);
 });
 
 gulp.task('copy:bower', function () {
