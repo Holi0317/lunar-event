@@ -6,15 +6,15 @@ window.addEventListener('WebComponentsReady', () => {
   /* global app */
   page.base('@@basePath');
 
-  page('/', function () {
+  page('/', () => {
     app.route = '/';
   });
 
-  page('/main', function () {
+  page('/main', () => {
     app.route = '/main';
   });
 
-  page('*', function () {
+  page('*', () => {
     app.route = '404';
   });
 

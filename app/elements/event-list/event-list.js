@@ -4,28 +4,28 @@ let format = require('string-format');
 
 class eventList{
 
-  mapper = {
-    'month': 'month-item',
-    'year': 'year-item'
-  };
-
-  listeners = {
-    'form.iron-form-submit': 'formSubmit',
-    'add.click': 'dynamicForm',
-    'frequency.change': 'freqChange',
-    'menu-import.click': 'showImport',
-    'menu-export.click': 'showExport'
-  };
-
-  constructor() {
-    Polymer(eventList.prototype);
-  }
+  constructor() {}
 
   get is() {
     return 'event-list';
   }
 
+  get listeners() {
+    return {
+      'form.iron-form-submit': 'formSubmit',
+      'add.click': 'dynamicForm',
+      'frequency.change': 'freqChange',
+      'menu-import.click': 'showImport',
+      'menu-export.click': 'showExport'
+    };
+  }
+
   ready() {
+    this.mapper = {
+      'month': 'month-item',
+      'year': 'year-item'
+    };
+
     let thisYear = new Date().getFullYear();
     this.$$(`select[name=start-year] > option[value='${thisYear}']`).selected = true;
     this.$$(`select[name=end-year] > option[value='${thisYear+1}']`).selected = true;
@@ -293,4 +293,4 @@ class eventList{
   }
 }
 
-new eventList();
+Polymer(eventList)
