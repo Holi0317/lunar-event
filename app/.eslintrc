@@ -5,11 +5,19 @@
     "browser": true
   },
   "ecmaFeatures": {
-    "modules": false
+    "modules": true
   },
   "extends": "eslint:recommended",
   "rules": {
     "quotes": [2, "single"],
-    "no-console": [2]
+    "no-console": [0]
+  },
+  "plugins": [
+    "eslint-plugin-html"
+  ],
+  "parser": "babel-eslint",
+  "globals": {
+    "gapi": true,
+    "Polymer": true
   }
 }

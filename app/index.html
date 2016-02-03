@@ -60,14 +60,4 @@
   </template>
 
 </body>
-<script>
-app.addEventListener('dom-change', function () {
-  this.$.signin.addEventListener('google-signin-success', function () {
-    page('/main');
-  });
-  this.$.signin.addEventListener('google-signin-aware-signed-out', function () {
-    page('/');
-  });
-});
-</script>
 </html>

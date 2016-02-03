@@ -1,31 +1,47 @@
 'use strict';
-var gulp = require('gulp');
-var $ = require('gulp-load-plugins')();
-var del = require('del');
-var runSequence = require('run-sequence');
-var browserSync = require('browser-sync').create();
-var reload = browserSync.reload;
 
-var secret = require('./secret');
+let gulp = require('gulp');
+let $ = require('gulp-load-plugins')();
+let del = require('del');
+let runSequence = require('run-sequence');
+let browserify = require('browserify');
+let source = require('vinyl-source-stream');
+let buffer = require('vinyl-buffer');
 
-gulp.task('vulcanize', function () {
-  return gulp.src('app/elements/elements.html')
+let browserSync = require('browser-sync').create();
+let reload = browserSync.reload;
+
+let secret = require('./secret');
+
+function replaceSecret(stream) {
+  return stream
+  .pipe($.replace(/@@clientId/g, secret.clientId))
+  .pipe($.replace(/@@clientSecret/g, secret.clientSecret))
+  .pipe($.replace(/@@basePath/g, secret.basePath));
+}
+
+gulp.task('vulcanize', () => {
+  let stream = gulp.src('dist/elements/elements.html')
   .pipe($.vulcanize({
     stripComments: true,
     inlineCss: true,
-    inlineScripts: true}))
-  .pipe($.replace(/@@clientId/g, secret.clientId))
-  .pipe($.replace(/@@clientSecret/g, secret.clientSecret))
-  .pipe($.replace(/@@basePath/g, secret.basePath))
+    inlineScripts: true
+  }));
+
+  return replaceSecret(stream)
+  .pipe($.crisper())
   .pipe($.size())
   .pipe(gulp.dest('dist/elements'));
 });
 
-gulp.task('html', function () {
-  return gulp.src('app/index.html')
-  .pipe($.replace(/@@clientId/g, secret.clientId))
-  .pipe($.replace(/@@clientSecret/g, secret.clientSecret))
-  .pipe($.replace(/@@basePath/g, secret.basePath))
+gulp.task('html', () => {
+  return replaceSecret(gulp.src('app/index.html'))
+  .pipe($.size())
+  .pipe(gulp.dest('.tmp/'));
+});
+
+gulp.task('html:dist', ['html'], () => {
+  return gulp.src('.tmp/index.html')
   .pipe($.htmlmin({
     removeComments: true,
     collapseWhitespace: true,
@@ -37,14 +53,14 @@ gulp.task('html', function () {
     minifyCSS: true
   }))
   .pipe($.size())
-  .pipe(gulp.dest('dist/'));
+  .pipe(gulp.dest('dist'));
+})
+
+gulp.task('clean', () => {
+  return del(['dist', '.tmp']);
 });
 
-gulp.task('clean', function () {
-  return del(['dist']);
-});
-
-gulp.task('copy:bower', function () {
+gulp.task('copy:bower', () => {
   return gulp.src([
     'app/bower_components/**/*'
   ])
@@ -52,51 +68,77 @@ gulp.task('copy:bower', function () {
   .pipe(gulp.dest('dist/bower_components'));
 });
 
-gulp.task('copy:elements', function () {
-  return gulp.src([
-    'app/elements/**/*'
-  ])
-  .pipe($.replace(/@@clientId/g, secret.clientId))
-  .pipe($.replace(/@@clientSecret/g, secret.clientSecret))
-  .pipe($.replace(/@@basePath/g, secret.basePath))
+gulp.task('copy:elements', () => {
+  return replaceSecret(gulp.src([
+    'app/elements/**/*',
+    '!app/elements/app.js'
+  ]))
   .pipe($.size())
   .pipe(gulp.dest('dist/elements'));
 });
 
-gulp.task('serve', ['html', 'copy:elements'], function() {
+gulp.task('copy:tmp', () => {
+  return gulp.src(['.tmp/**/*'])
+  .pipe($.size())
+  .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('browserify', () => {
+  let b = browserify({
+    entries: 'app/elements/app.js'
+  });
+
+  let stream = b.bundle()
+  .pipe(source('app.js'))
+  .pipe(buffer());
+
+  return replaceSecret(stream)
+  .pipe($.size())
+  .pipe(gulp.dest('.tmp/elements'));
+});
+
+gulp.task('serve', ['html', 'browserify'], () => {
   browserSync.init({
     server: {
-      baseDir: 'dist',
+      baseDir: ['.tmp', 'app'],
       routes: {
         '/bower_components': 'app/bower_components'
       }
-    }
+    },
+    port: 3000
   });
 
   gulp.watch('app/index.html', ['html', reload]);
-  gulp.watch('app/elements/**/*', ['copy:elements', reload]);
+  gulp.watch('app/elements/**/*.js', ['browserify', reload]);
 });
 
-gulp.task('default', function (cb) {
+gulp.task('serve:dist', ['default'], () => {
+  browserSync.init({
+    server: {
+      baseDir: ['dist']
+    }
+  });
+});
+
+gulp.task('default', cb => {
   return runSequence(
     'clean',
-    ['copy:bower', 'copy:elements'],
-    ['vulcanize', 'html'],
+    ['browserify'],
+    ['copy:bower', 'copy:elements', 'copy:tmp', 'html:dist'],
+    ['vulcanize'],
     cb
   );
 });
 
-gulp.task('push', function () {
+gulp.task('push', () => {
   return gulp.src('./dist/**/*')
   .pipe($.ghPages());
 });
 
-gulp.task('deploy', function (cb) {
+gulp.task('deploy', cb => {
   secret.basePath = '/lunar-event';
   return runSequence(
-    'clean',
-    ['copy:bower', 'copy:elements'],
-    ['vulcanize', 'html'],
+    'default',
     'push',
     cb
   );
