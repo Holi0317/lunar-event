@@ -1,15 +1,22 @@
 'use strict';
 
-let itemBehaviour = require('./item-behaviour');
-
 class monthItem {
-  behaviors = [itemBehaviour];
-
   constructor() {}
 
   get is() {
     return 'month-item';
   }
+
+  get listeners() {
+    return {
+      'remove.click': 'remove'
+    };
+  }
+
+  ready() {
+    this.day = 1;
+  }
+
 }
 
 Polymer(monthItem)

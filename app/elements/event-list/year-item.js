@@ -1,14 +1,21 @@
 'use strict';
 
-let itemBehaviour = require('./item-behaviour');
-
 class yearItem {
-  behaviors = [itemBehaviour];
-
   constructor() {}
 
   get is() {
     return 'year-item';
+  }
+
+  get listeners() {
+    return {
+      'remove.click': 'remove'
+    };
+  }
+
+  ready() {
+    this.day = 1;
+    this.month = 1;
   }
 }
 
