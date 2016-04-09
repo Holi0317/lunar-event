@@ -25,40 +25,34 @@
   },
   "homepage": "https://github.com/holi0317/lunar-event#readme",
   "devDependencies": {
-    "async": "^1.5.2",
-    "babel-plugin-transform-class-properties": "^6.4.0",
+    "babel-loader": "^6.2.4",
     "babel-preset-es2015": "^6.3.13",
-    "babelify": "^7.2.0",
+    "babel-preset-react": "^6.5.0",
     "browser-sync": "^2.8.2",
-    "browserify": "^13.0.0",
+    "css-loader": "^0.23.1",
     "del": "^2.2.0",
     "gulp": "^3.9.0",
-    "gulp-crisper": "^1.0.0",
     "gulp-gh-pages": "^0.5.2",
     "gulp-htmlmin": "^1.1.3",
     "gulp-load-plugins": "^1.2.0",
-    "gulp-replace": "^0.5.3",
-    "gulp-size": "^2.0.0",
-    "gulp-vulcanize": "^6.0.1",
-    "page": "^1.6.4",
-    "require-globify": "^1.3.0",
+    "json-loader": "^0.5.4",
     "run-sequence": "^1.1.2",
     "string-format": "^0.5.0",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
-  },
-  "browserify": {
-    "transform": [
-      "babelify",
-      "require-globify"
-    ]
+    "style-loader": "^0.13.1",
+    "webpack": "^1.12.14",
+    "webpack-stream": "^3.1.0"
   },
   "babel": {
     "presets": [
-      "es2015"
-    ],
-    "plugins": [
-      "transform-class-properties"
+      "es2015",
+      "react"
     ]
+  },
+  "dependencies": {
+    "material-ui": "^0.15.0-alpha.2",
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1",
+    "react-tap-event-plugin": "^0.2.2",
+    "sweetalert-react": "^0.4.4"
   }
 }
