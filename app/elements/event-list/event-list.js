@@ -41,7 +41,7 @@ class eventList{
   freqChange() {
     // Frequency changed. Remove all item in dynamic.
     let child = Polymer.dom(this.$.dynamic).childNodes;
-    child.forEach(function (item) {
+    child.forEach(item => {
       item.remove();
     });
     this.$.add.click();
@@ -49,8 +49,8 @@ class eventList{
 
   formSubmit(event) {
     console.log(event.detail);
-    var form = event.detail;
-    var self = this;
+    let form = event.detail;
+    let self = this;
 
     // assert if freq = month, year = undefined
     if (form.frequency === 'month' && typeof form['month[]'] !== 'undefined') {
