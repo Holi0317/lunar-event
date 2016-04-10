@@ -19,7 +19,8 @@ function webpackConfig() {
           loader: 'babel?cacheDirectory',
           exclude: /node_modules/
         },
-        { test: /\.css$/, loader: 'style-loader!css-loader' }
+        { test: /\.css$/, loader: 'style-loader!css-loader' },
+        { test: /\.json$/, loader: 'json-loader' }
       ]
     },
     resolve: {
@@ -74,6 +75,7 @@ gulp.task('serve', ['html', 'bundle'], () => {
 
   gulp.watch('app/index.html', reload);
   gulp.watch('app/**/*.js', ['bundle', reload]);
+  gulp.watch('app/**/*.jsx', ['bundle', reload]);
 });
 
 gulp.task('serve:dist', ['default'], () => {
