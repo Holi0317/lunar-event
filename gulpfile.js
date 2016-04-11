@@ -58,7 +58,12 @@ gulp.task('bundle', () => {
 
 gulp.task('bundle:dist', () => {
   let config = webpackConfig();
-  config.plugins.push(new webpack.optimize.UglifyJsPlugin());
+  config.plugins.push(new webpack.optimize.UglifyJsPlugin({
+    compress: {
+      warnings: false
+    }
+  }));
+  config.plugins.push(new webpack.EnvironmentPlugin(['NODE_ENV']));
 
   return gulp.src('app/index.js')
   .pipe(webpackStream(config))
@@ -88,6 +93,7 @@ gulp.task('serve:dist', ['default'], () => {
 });
 
 gulp.task('default', cb => {
+  process.env.NODE_ENV = 'production';
   return runSequence(
     'clean',
     ['bundle:dist', 'html'],
