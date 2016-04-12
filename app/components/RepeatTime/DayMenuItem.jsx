@@ -1,0 +1,35 @@
+import React from 'react';
+import MenuItem from 'material-ui/lib/menus/menu-item';
+
+export default [
+  <MenuItem key={0} primaryText="初一" value={1} />,
+  <MenuItem key={1} primaryText="初二" value={2} />,
+  <MenuItem key={2} primaryText="初三" value={3} />,
+  <MenuItem key={3} primaryText="初四" value={4} />,
+  <MenuItem key={4} primaryText="初五" value={5} />,
+  <MenuItem key={5} primaryText="初六" value={6} />,
+  <MenuItem key={6} primaryText="初七" value={7} />,
+  <MenuItem key={7} primaryText="初八" value={8} />,
+  <MenuItem key={8} primaryText="初九" value={9} />,
+  <MenuItem key={9} primaryText="初十" value={10} />,
+  <MenuItem key={10} primaryText="十一" value={11} />,
+  <MenuItem key={11} primaryText="十二" value={12} />,
+  <MenuItem key={12} primaryText="十三" value={13} />,
+  <MenuItem key={13} primaryText="十四" value={14} />,
+  <MenuItem key={14} primaryText="十五" value={15} />,
+  <MenuItem key={15} primaryText="十六" value={16} />,
+  <MenuItem key={16} primaryText="十七" value={17} />,
+  <MenuItem key={17} primaryText="十八" value={18} />,
+  <MenuItem key={18} primaryText="十九" value={19} />,
+  <MenuItem key={19} primaryText="二十" value={20} />,
+  <MenuItem key={20} primaryText="廿一" value={21} />,
+  <MenuItem key={21} primaryText="廿二" value={22} />,
+  <MenuItem key={22} primaryText="廿三" value={23} />,
+  <MenuItem key={23} primaryText="廿四" value={24} />,
+  <MenuItem key={24} primaryText="廿五" value={25} />,
+  <MenuItem key={25} primaryText="廿六" value={26} />,
+  <MenuItem key={26} primaryText="廿七" value={27} />,
+  <MenuItem key={27} primaryText="廿八" value={28} />,
+  <MenuItem key={28} primaryText="廿九" value={29} />,
+  <MenuItem key={29} primaryText="三十" value={30} />
+];
