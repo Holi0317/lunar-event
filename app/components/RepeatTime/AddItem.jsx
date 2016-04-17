@@ -21,7 +21,7 @@ export default function AddItem(props) {
     props.onChange(props.value);
   }
   return (
-    <IconButton onClick={onClick} tooltip="新增" touch>
+    <IconButton onClick={onClick} tooltip="新增" tooltipPosition="top-center" touch>
       <PlusIcon />
     </IconButton>
   )
