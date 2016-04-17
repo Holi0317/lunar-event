@@ -1,6 +1,6 @@
 import React from 'react';
-import RaisedButton from 'material-ui/lib/raised-button';
-import Paper from 'material-ui/lib/paper';
+import RaisedButton from 'material-ui/RaisedButton';
+import Paper from 'material-ui/Paper';
 
 import config from '../../config.json';
 import GoogleIcon from './Icons/GoogleIcon';
@@ -10,7 +10,7 @@ const style = {
     margin: 12
   },
   container: {
-    padding: '5px'
+    padding: '10px'
   }
 }
 

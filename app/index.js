@@ -4,8 +4,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
+import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 import LoginView from './components/LoginView';
 import LoginedView from './components/LoginedView';
+
+const darkMuiTheme = getMuiTheme(lightBaseTheme);
 
 injectTapEventPlugin();
 
@@ -42,4 +48,8 @@ const App = React.createClass({
   }
 });
 
-ReactDOM.render(<App />, document.getElementById('react'));
+ReactDOM.render(
+  <MuiThemeProvider muiTheme={darkMuiTheme}>
+    <App />
+  </MuiThemeProvider>
+  , document.getElementById('react'));

@@ -1,8 +1,8 @@
 import React from 'react';
 
-import TextField from 'material-ui/lib/text-field';
-import RaisedButton from 'material-ui/lib/raised-button';
-import * as Colors from 'material-ui/lib/styles/colors';
+import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
+import {green500} from 'material-ui/styles/colors';
 
 import FrequencySelector from './FrequencySelector';
 import RangeSelector from './RangeSelector';
@@ -107,7 +107,7 @@ export default React.createClass({
         <RangeSelector end={this.makePropHandlers('rangeEnd')} start={this.makePropHandlers('rangeStart')} />
         <TextField floatingLabelText="活動內容說明(可選)" fullWidth multiLine {...this.makePropHandlers('description')} style={style.textField} />
         <RepeatTimeSelector {...this.makePropHandlers('repeatTime')} frequency={this.state.frequency} style={style.textField} />
-        <RaisedButton backgroundColor={Colors.green500} label="Submit" labelColor={'#FFFFFF'} onClick={this.handleSubmit} />
+        <RaisedButton backgroundColor={green500} label="Submit" labelColor={'#FFFFFF'} onClick={this.handleSubmit} />
       </div>
     );
   }

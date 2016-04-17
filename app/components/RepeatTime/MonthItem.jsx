@@ -1,8 +1,8 @@
 import React from 'react';
-import SelectField from 'material-ui/lib/select-field';
-import IconButton from 'material-ui/lib/icon-button';
-import DeleteIcon from '../Icons/DeleteIcon';
+import SelectField from 'material-ui/SelectField';
+import IconButton from 'material-ui/IconButton';
 
+import DeleteIcon from '../Icons/DeleteIcon';
 import DayMenuItem from './DayMenuItem';
 
 export default function YearItem(props) {

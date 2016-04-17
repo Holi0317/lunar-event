@@ -1,5 +1,5 @@
 import React from 'react';
-import MenuItem from 'material-ui/lib/menus/menu-item';
+import MenuItem from 'material-ui/MenuItem';
 
 export default [
   <MenuItem key={0} primaryText="正" value={1}  />,
