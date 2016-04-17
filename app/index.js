@@ -11,7 +11,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import LoginView from './components/LoginView';
 import LoginedView from './components/LoginedView';
 
-const darkMuiTheme = getMuiTheme(lightBaseTheme);
+const lightMuiTheme = getMuiTheme(lightBaseTheme);
 
 injectTapEventPlugin();
 
@@ -49,7 +49,7 @@ const App = React.createClass({
 });
 
 ReactDOM.render(
-  <MuiThemeProvider muiTheme={darkMuiTheme}>
+  <MuiThemeProvider muiTheme={lightMuiTheme}>
     <App />
   </MuiThemeProvider>
   , document.getElementById('react'));
