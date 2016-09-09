@@ -1,0 +1,21 @@
+@import "spinner";
+@import "dialog";
+@import "../node_modules/material-design-lite/dist/material";
+
+body {
+  margin: 0;
+}
+
+.splash {
+  text-align: center;
+  margin: 10% 0 0 0;
+  box-sizing: border-box;
+
+  .loader {
+    text-align: center;
+    display: inline-block;
+    font-size: 72px;
+    margin-top: 50px;
+  }
+
+}

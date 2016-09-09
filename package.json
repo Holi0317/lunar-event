@@ -2,12 +2,17 @@
   "name": "lunar-event",
   "version": "1.0.0",
   "description": "Add event periodically to Google Calendar according to lunar calendar",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/holi0317/lunar-event.git"
+  },
+  "aurelia": {
+    "build": {
+      "resources": [
+        "mdl",
+        "aurelia-dialog"
+      ]
+    }
   },
   "keywords": [
     "lunar",
@@ -24,41 +29,87 @@
     "url": "https://github.com/holi0317/lunar-event/issues"
   },
   "homepage": "https://github.com/holi0317/lunar-event#readme",
-  "devDependencies": {
-    "async": "^1.5.2",
-    "babel-plugin-transform-class-properties": "^6.4.0",
-    "babel-preset-es2015": "^6.3.13",
-    "babelify": "^7.2.0",
-    "browser-sync": "^2.8.2",
-    "browserify": "^13.0.0",
-    "del": "^2.2.0",
-    "gulp": "^3.9.0",
-    "gulp-crisper": "^1.0.0",
-    "gulp-gh-pages": "^0.5.2",
-    "gulp-htmlmin": "^1.1.3",
-    "gulp-load-plugins": "^1.2.0",
-    "gulp-replace": "^0.5.3",
-    "gulp-size": "^2.0.0",
-    "gulp-vulcanize": "^6.0.1",
-    "page": "^1.6.4",
-    "require-globify": "^1.3.0",
-    "run-sequence": "^1.1.2",
-    "string-format": "^0.5.0",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+  "scripts": {
+    "clean": "npm cache clean && rimraf node_modules test/coverage dist",
+    "clean:dist": "rimraf dist",
+    "preclean:install": "npm run clean",
+    "clean:install": "npm set progress=false && npm install",
+    "preclean:start": "npm run clean",
+    "clean:start": "npm start",
+    "watch": "npm run watch:dev",
+    "watch:dev": "npm run build:dev -- --watch",
+    "watch:test": "npm run test -- --auto-watch --no-single-run",
+    "watch:prod": "npm run build:prod -- --watch",
+    "build": "cross-env NODE_ENV=development npm run build:dev",
+    "prebuild:dev": "npm run clean:dist",
+    "build:dev": "cross-env NODE_ENV=development npm run webpack -- --progress --profile",
+    "prebuild:prod": "npm run clean:dist",
+    "build:prod": "cross-env NODE_ENV=production npm run webpack -- --progress --profile",
+    "start": "npm run server:dev",
+    "server": "npm run server:dev",
+    "server:dev": "cross-env NODE_ENV=development node ./node_modules/webpack-dev-server/bin/webpack-dev-server --inline --progress --profile --watch",
+    "server:prod": "http-server dist --cors",
+    "webpack": "cross-env ./node_modules/.bin/webpack",
+    "webpack-dev-server": "cross-env ./node_modules/.bin/webpack-dev-server"
   },
-  "browserify": {
-    "transform": [
-      "babelify",
-      "require-globify"
-    ]
+  "dependencies": {
+    "aurelia-bootstrapper-webpack": "^1.0.0",
+    "aurelia-dialog": "^1.0.0-beta.3.0.0",
+    "aurelia-event-aggregator": "^1.0.0",
+    "aurelia-framework": "^1.0.2",
+    "aurelia-loader-webpack": "^1.0.2",
+    "aurelia-logging-console": "^1.0.0",
+    "aurelia-pal-browser": "^1.0.0",
+    "aurelia-polyfills": "^1.0.0",
+    "aurelia-templating-binding": "^1.0.0",
+    "aurelia-templating-resources": "^1.0.0",
+    "bluebird": "^3.4.5",
+    "material-design-lite": "^1.2.0"
+  },
+  "devDependencies": {
+    "@easy-webpack/config-aurelia": "^2.2.0",
+    "@easy-webpack/config-babel": "^2.0.3",
+    "@easy-webpack/config-common-chunks-simple": "^2.0.1",
+    "@easy-webpack/config-copy-files": "^1.0.0",
+    "@easy-webpack/config-env-development": "^2.1.1",
+    "@easy-webpack/config-env-production": "^2.1.0",
+    "@easy-webpack/config-external-source-maps": "^2.0.1",
+    "@easy-webpack/config-fonts-and-images": "^1.2.1",
+    "@easy-webpack/config-generate-index-html": "^2.0.1",
+    "@easy-webpack/config-global-bluebird": "^1.3.2",
+    "@easy-webpack/config-global-jquery": "^1.4.0",
+    "@easy-webpack/config-global-regenerator": "^1.2.0",
+    "@easy-webpack/config-html": "^2.0.2",
+    "@easy-webpack/config-json": "^2.0.2",
+    "@easy-webpack/config-sass": "^1.2.0",
+    "@easy-webpack/config-source-map-support": "^1.0.0",
+    "@easy-webpack/config-test-coverage-istanbul": "^2.0.2",
+    "@easy-webpack/config-typescript": "^2.1.2",
+    "@easy-webpack/config-uglify": "^2.1.0",
+    "@easy-webpack/core": "^1.3.2",
+    "@types/bluebird": "^3.0.32",
+    "@types/gapi": "0.0.28",
+    "@types/gapi.auth2": "0.0.30",
+    "@types/material-design-lite": "^1.1.13",
+    "aurelia-tools": "^0.2.4",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-es2015-loose": "^7.0.0",
+    "babel-preset-es2015-loose-native-modules": "^1.0.0",
+    "babel-preset-stage-1": "^6.13.0",
+    "babel-register": "^6.14.0",
+    "cross-env": "^2.0.1",
+    "http-server": "^0.9.0",
+    "rimraf": "^2.5.4",
+    "ts-node": "^1.3.0",
+    "typescript": "^2.0.0",
+    "webpack": ">=2.1.0-beta.18 || ^2.1.0",
+    "webpack-dev-server": ">=2.1.0-beta.0 || ^2.1.0"
   },
   "babel": {
     "presets": [
-      "es2015"
-    ],
-    "plugins": [
-      "transform-class-properties"
+      "es2015",
+      "stage-1"
     ]
   }
 }

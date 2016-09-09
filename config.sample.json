@@ -1,0 +1,4 @@
+{
+  "__README": "Copy and rename this file to config.json before building",
+  "clientID": "Client ID obtained from Google developer console"
+}

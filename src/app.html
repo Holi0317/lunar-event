@@ -1,0 +1,23 @@
+<template>
+
+  <require from="./fork-me.html"></require>
+  <require from="./main-screen"></require>
+
+  <div mdl class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <header class="mdl-layout__header">
+      <div class="mdl-layout__header-row">
+        <!-- Title -->
+        <span class="mdl-layout-title">Lunar event</span>
+        <!-- Add spacer, to align navigation to the right -->
+        <div class="mdl-layout-spacer"></div>
+      </div>
+    </header>
+    <main class="mdl-layout__content">
+      <div class="page-content">
+        <!-- Your content goes here -->
+        <main-screen></main-screen>
+        <fork-me></fork-me>
+      </div>
+    </main>
+  </div>
+</template>
